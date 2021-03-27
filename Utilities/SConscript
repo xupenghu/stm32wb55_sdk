@@ -1,0 +1,24 @@
+from building import *
+Import('rtconfig')
+Import('RTT_ROOT')
+
+# get current dir path
+cwd = GetCurrentDir()
+
+if GetDepend(['PKG_USING_STM32WB55_SDK']):
+    # add the general drivers.
+
+    BLE_UTILITIES = Split('''
+    ./lpm/tiny_lpm/stm32_lpm.c
+    ./sequencer/stm32_seq.c
+    ''')
+
+    path = [cwd + '/']
+    path += [cwd + '/lpm/tiny_lpm']
+    path += [cwd + '/sequencer']
+    path += [cwd + '/conf']
+
+    # add src and inc to group
+    group = DefineGroup('BLE_Utilities', BLE_UTILITIES, depend=[
+                        'PKG_USING_STM32WB55_SDK'], CPPPATH=path)
+Return('group')

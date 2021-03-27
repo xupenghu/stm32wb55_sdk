@@ -1,0 +1,42 @@
+from building import *
+Import('rtconfig')
+Import('RTT_ROOT')
+
+# get current dir path
+cwd = GetCurrentDir()
+
+if GetDepend(['PKG_USING_STM32WB55_SDK']):
+    # add the general drivers.
+    BLE_SRC = Split('''
+    ./interface/patterns/ble_thread/tl/hci_tl_if.c
+    ./interface/patterns/ble_thread/tl/hci_tl.c
+    ./interface/patterns/ble_thread/tl/shci_tl_if.c
+    ./interface/patterns/ble_thread/tl/shci_tl.c
+    ./interface/patterns/ble_thread/tl/tl_mbox.c
+    ./interface/patterns/ble_thread/shci/shci.c
+    ./ble/core/auto/ble_gap_aci.c
+    ./ble/core/auto/ble_gatt_aci.c
+    ./ble/core/auto/ble_hal_aci.c
+    ./ble/core/auto/ble_hci_le.c
+    ./ble/core/auto/ble_l2cap_aci.c
+    ./ble/core/template/osal.c
+    ./ble/svc/Src/svc_ctl.c
+    ./utilities/dbg_trace.c
+    ./utilities/otp.c
+    ./utilities/stm_list.c
+    ./utilities/stm_queue.c
+    ''')
+
+    path = [cwd + '/']
+    path += [cwd + '/ble']
+    path += [cwd + '/ble/core']
+    path += [cwd + '/ble/core/template']
+    path += [cwd + '/interface/patterns/ble_thread']
+    path += [cwd + '/interface/patterns/ble_thread/tl']
+    path += [cwd + '/interface/patterns/ble_thread/shci']
+    path += [cwd + '/utilities']
+
+    # add src and inc to group
+    group = DefineGroup('STM32_WPAN', BLE_SRC, depend=[
+                        'PKG_USING_STM32WB55_SDK'], CPPPATH=path)
+Return('group')

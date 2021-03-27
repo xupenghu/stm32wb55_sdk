@@ -1,0 +1,35 @@
+from building import *
+Import('rtconfig')
+Import('RTT_ROOT')
+
+# get current dir path
+cwd = GetCurrentDir()
+BLE_PERIPHERAL_CORE = Split('''
+    ./Core/Src/app_entry.c
+    ./Core/Src/app_debug.c
+    ./Core/Src/hw_timerserver.c
+    ./Core/Src/stm32_lpm_if.c
+''')
+
+
+path = [cwd + '/']
+path += [cwd + '/Core/Inc']
+
+
+if GetDepend(['STM32WB55_BLE_IBEACON']):
+    # add the beacon drivers.
+    BLE_PERIPHERAL_SIMPLE = Split('''
+        ./BLE_Beacon/STM32_WPAN/App/app_ble.c
+        ./BLE_Beacon/STM32_WPAN/App/ibeacon_service.c
+        ./BLE_Beacon/iBeacon_entry.c
+        ./BLE_Beacon/STM32_WPAN/Target/hw_ipcc.c
+    ''')
+
+    path += [cwd + '/BLE_Beacon/STM32_WPAN/App']
+    path += [cwd + '/BLE_Beacon/STM32_WPAN/Target']
+
+    BLE_SRC = BLE_PERIPHERAL_CORE + BLE_PERIPHERAL_SIMPLE
+    # add src and inc to group
+    group = DefineGroup('iBeacon', BLE_SRC, depend=[
+                        'STM32WB55_BLE_IBEACON'], CPPPATH=path)
+Return('group')
